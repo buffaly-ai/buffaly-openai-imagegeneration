@@ -1,0 +1,76 @@
+reference Buffaly.OpenAI.ImageGeneration Buffaly.OpenAI.ImageGeneration;
+import Buffaly.OpenAI.ImageGeneration Buffaly.OpenAI.ImageGeneration.OpenAIImageGenerationServiceRuntime OpenAIImageGenerationServiceRuntime;
+
+prototype OpenAIImageGenerationSkillAction : OpsAction
+{
+	Description = @"Base action type for OpenAI image generation skill tools.";
+}
+
+[SemanticEntity("openai image generation skill")]
+prototype OpenAIImageGenerationSkill : SkillEntity
+{
+	Description = "OpenAI image generation tools and harness-backed output helpers.";
+	ActionRoot = OpenAIImageGenerationSkillAction;
+}
+
+[SemanticProgram.InfinitivePhrase("to generate an image with openai")]
+[SemanticProgram.InfinitivePhrase("to create an image with openai")]
+prototype ToGenerateImageWithOpenAI : OpenAIImageGenerationSkillAction
+{
+	Description = @"Creates an OpenAI image in the current Buffaly session artifacts folder and returns the operation result JSON.";
+
+	function Execute(string prompt, string size, string model, string quality, string background, string outputFormat, string outputCompression) : string
+	{
+		string apiKey = LLMs.GetResponsesApiKeyOrEmpty();
+		if (StringUtil.IsEmpty(apiKey))
+		{
+			throw "OpenAI feature API key is required before using OpenAI image generation.";
+		}
+
+		if (_opsAgent == null)
+		{
+			throw "_opsAgent runtime is not available.";
+		}
+
+		string sessionDirectory = _opsAgent.GetCurrentSessionDirectory();
+		if (StringUtil.IsEmpty(sessionDirectory))
+		{
+			throw "Current session directory is not available.";
+		}
+
+		string artifactRelativeDirectory = "artifacts/images/openai-generation";
+		string outputDirectory = Path.Combine(sessionDirectory, artifactRelativeDirectory);
+		return OpenAIImageGenerationServiceRuntime.CreateImageFromParameters(apiKey, outputDirectory, artifactRelativeDirectory, prompt, size, model, quality, background, outputFormat, outputCompression);
+	}
+}
+
+[SemanticProgram.InfinitivePhrase("to edit an image with openai")]
+[SemanticProgram.InfinitivePhrase("to mask edit an image with openai")]
+prototype ToEditImageWithOpenAI : OpenAIImageGenerationSkillAction
+{
+	Description = @"Edits an image with OpenAI, writes the final image to the current Buffaly session artifacts folder, and returns the operation result JSON.";
+
+	function Execute(string prompt, string imageFilePath, string maskFilePath, string size, string model, string quality, string background, string outputFormat, string outputCompression) : string
+	{
+		string apiKey = LLMs.GetResponsesApiKeyOrEmpty();
+		if (StringUtil.IsEmpty(apiKey))
+		{
+			throw "OpenAI feature API key is required before using OpenAI image generation.";
+		}
+
+		if (_opsAgent == null)
+		{
+			throw "_opsAgent runtime is not available.";
+		}
+
+		string sessionDirectory = _opsAgent.GetCurrentSessionDirectory();
+		if (StringUtil.IsEmpty(sessionDirectory))
+		{
+			throw "Current session directory is not available.";
+		}
+
+		string artifactRelativeDirectory = "artifacts/images/openai-generation";
+		string outputDirectory = Path.Combine(sessionDirectory, artifactRelativeDirectory);
+		return OpenAIImageGenerationServiceRuntime.EditImageFromParameters(apiKey, outputDirectory, artifactRelativeDirectory, prompt, imageFilePath, maskFilePath, size, model, quality, background, outputFormat, outputCompression);
+	}
+}

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buffaly Image Studio</title>
+  <link rel="stylesheet" href="styles/image-harness.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero-card">
+      <div class="brand-lockup">
+        <div class="brand-mark"><img src="images/bf_logo_fav_Large.png" alt="Buffaly"></div>
+        <div>
+          <p class="eyebrow">Buffaly Agent Tools</p>
+          <h1>Image Studio</h1>
+          <p class="hero-copy">Generate, load, revise, and compare images in one Buffaly-style working canvas.</p>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <div id="apiStatus" class="status-pill">Checking API key</div>
+        <button id="refreshGalleryButton" class="secondary" type="button">Refresh history</button>
+      </div>
+    </header>
+
+    <section class="studio-grid" aria-label="Image editing workspace">
+      <aside class="control-panel">
+        <div class="panel-section">
+          <p class="eyebrow">Create</p>
+          <h2>Prompt</h2>
+          <label class="prompt-field">
+            <span>Generation prompt</span>
+            <textarea id="generatePrompt" rows="7">Create a clean square product image: a matte blue coffee mug on a light desk, with a small white label on the mug that says BUFFALY.</textarea>
+          </label>
+          <button id="generateButton" class="primary wide" type="button">Generate new image</button>
+          <div id="generateMessage" class="message"></div>
+        </div>
+
+        <div class="panel-section divider">
+          <p class="eyebrow">Revise</p>
+          <h2>Edit active image</h2>
+          <label class="prompt-field">
+            <span>Edit instruction</span>
+            <textarea id="editPrompt" rows="5">Change the mug color to warm red while keeping the composition and the BUFFALY label.</textarea>
+          </label>
+          <button id="editButton" class="primary wide" type="button">Edit active image</button>
+          <div id="editMessage" class="message"></div>
+        </div>
+
+        <div class="panel-section divider options-grid">
+          <label>
+            <span>Model</span>
+            <select id="modelSelect">
+              <option value="gpt-image-1.5">GPT Image 1.5</option>
+              <option value="gpt-image-2">GPT Image 2</option>
+            </select>
+          </label>
+          <label>
+            <span>Size</span>
+            <select id="sizeSelect">
+              <option value="1024x1024">1024 x 1024</option>
+              <option value="1024x1536">1024 x 1536</option>
+              <option value="1536x1024">1536 x 1024</option>
+              <option value="2048x2048">2048 x 2048</option>
+              <option value="2048x1152">2048 x 1152</option>
+              <option value="3840x2160">3840 x 2160</option>
+              <option value="auto">Auto</option>
+            </select>
+          </label>
+          <label>
+            <span>Quality</span>
+            <select id="qualitySelect">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="auto">Auto</option>
+            </select>
+          </label>
+          <label>
+            <span>Format</span>
+            <select id="formatSelect">
+              <option value="png">PNG</option>
+              <option value="jpeg">JPEG</option>
+              <option value="webp">WebP</option>
+            </select>
+          </label>
+          <label>
+            <span>Compression</span>
+            <input id="compressionInput" type="number" min="0" max="100" placeholder="JPEG/WebP">
+          </label>
+        </div>
+      </aside>
+
+      <section class="canvas-card" aria-label="Active image canvas">
+        <div class="canvas-toolbar">
+          <div>
+            <p class="eyebrow">Active canvas</p>
+            <h2 id="activeTitle">No image loaded</h2>
+            <p id="activeMeta" class="subtle">Generate an image, load one from disk, or choose a historical output.</p>
+          </div>
+          <div class="toolbar-actions">
+            <label class="file-button">
+              <input id="sourceImages" type="file" accept="image/png,image/jpeg,image/webp">
+              Load image
+            </label>
+            <a id="downloadResultLink" class="button-link disabled" href="#" download>Download</a>
+            <button id="copyPathButton" class="secondary" type="button">Copy path</button>
+          </div>
+        </div>
+
+        <div class="debug-viewer" aria-label="Mask pipeline debugger">
+          <div class="debug-tabs" id="debugViewTabs">
+            <button class="secondary active" type="button" data-debug-view="final">Final</button>
+            <button class="secondary" type="button" data-debug-view="source">Source</button>
+            <button class="secondary" type="button" data-debug-view="mask">Mask</button>
+            <button class="secondary" type="button" data-debug-view="source-mask">Source + Mask</button>
+            <button class="secondary" type="button" data-debug-view="final">OpenAI result</button>
+          </div>
+          <div id="debugSizingDiagnostics" class="debug-sizing">No canvas sizing measured yet.</div>
+        </div>
+        <div id="dropZone" class="canvas-drop-zone">
+          <div class="image-stage" id="imageStage">
+            <img id="activeImage" alt="Active working image">
+            <canvas id="maskCanvas"></canvas>
+            <div id="canvasEmpty" class="empty-state">
+              <strong>One working canvas.</strong>
+              <span>Drop an image here, generate a new image, or select an item from history.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mask-bar">
+          <div class="brush-control">
+            <span class="field-label">Mask brush</span>
+            <input id="brushSize" type="range" min="8" max="96" value="36">
+          </div>
+          <div class="mask-actions">
+            <button id="paintMaskButton" class="secondary active" type="button">Paint</button>
+            <button id="eraseMaskButton" class="secondary" type="button">Erase</button>
+            <button id="undoMaskButton" class="secondary" type="button">Undo</button>
+            <button id="clearMaskButton" class="secondary" type="button">Clear</button>
+          </div>
+          <div id="maskHint" class="mask-hint">Masking is automatic. Paint blue over the area to edit; if any mask is visible, the app sends it with the edit.</div>
+        </div>
+
+        <div class="mask-diagnostics" aria-label="Mask diagnostics">
+          <div>
+            <span class="field-label">Mask diagnostics</span>
+            <div id="maskDiagnostics">No mask prepared yet.</div>
+          </div>
+          <div class="mask-debug-links">
+            <a id="downloadDebugSourceLink" class="button-link disabled" href="#" download>Debug source</a>
+            <a id="downloadDebugMaskLink" class="button-link disabled" href="#" download>Debug mask</a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="history-panel">
+        <div class="panel-header compact">
+          <div>
+            <p class="eyebrow">History</p>
+            <h2>Recent images</h2>
+          </div>
+        </div>
+        <div id="galleryGrid" class="history-list">
+          <div class="empty-state">No saved outputs found yet.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="details-panel">
+      <div class="panel-header compact">
+        <div>
+          <p class="eyebrow">Response</p>
+          <h2>Last API result</h2>
+        </div>
+        <button id="copyResultButton" class="secondary" type="button">Copy JSON</button>
+      </div>
+      <pre id="lastResult">No calls yet.</pre>
+    </section>
+  </main>
+
+  <script src="/js/kcs/global.js"></script>
+  <script src="/js/kcs/LocalStorage2.js"></script>
+  <script src="/js/kcs/moremoo4.js?v=2"></script>
+  <script src="/js/kcs/JsonMethod.js?v=2"></script>
+  <script src="/js/kcs/validators.js?v=2"></script>
+  <script src="/js/kcs/stl.js?v=2"></script>
+  <script>
+    window.UserMessages = window.UserMessages || {
+      DisplayNow: function(message, kind){ try { console[kind === 'Error' ? 'error' : 'log'](message); } catch {} },
+      DisplayAll: function(){},
+      AddError: function(){},
+      Save: function(){}
+    };
+    window.UserMessages_ConsoleFulfill = window.UserMessages_ConsoleFulfill || function(){};
+  </script>
+  <script src="/JsonWs/Buffaly.OpenAI.ImageGeneration.WebHarness.ImageGenerationHarnessJsonWsService.ashx.js?v=20260423.1"></script>
+  <script src="js/image-harness.js"></script>
+</body>
+</html>
+
