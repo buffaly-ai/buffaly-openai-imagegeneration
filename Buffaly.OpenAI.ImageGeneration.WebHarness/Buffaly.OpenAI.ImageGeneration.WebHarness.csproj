@@ -13,6 +13,12 @@
     <Reference Include="BasicUtilities">
       <HintPath>C:\dev\BuffalyNet6\lib\BasicUtilities.dll</HintPath>
     </Reference>
+    <Reference Include="Buffaly.Agent.Host">
+      <HintPath>..\..\buffaly-development\Deploy\Buffaly.Agent.Host.dll</HintPath>
+    </Reference>
+    <Reference Include="Buffaly.Agent.Web.Common">
+      <HintPath>..\..\buffaly-development\Deploy\Buffaly.Agent.Web.Common.dll</HintPath>
+    </Reference>
     <Reference Include="Buffaly.Common">
       <HintPath>C:\dev\BuffalyNet6\lib\Buffaly.Common.dll</HintPath>
     </Reference>
@@ -23,23 +29,6 @@
       <HintPath>C:\dev\BuffalyNet6\lib\RooTrax.Common.DB.dll</HintPath>
     </Reference>
   </ItemGroup>
-	<ItemGroup>
-		<Reference Include="Buffaly.Agent.Web.Common">
-			<HintPath>C:\dev\Buffaly.Development\buffaly.agent.web\bin\Debug\net9.0\Buffaly.Agent.Web.Common.dll</HintPath>
-		</Reference>
-		<Reference Include="Buffaly.Agent.Host">
-			<HintPath>C:\dev\Buffaly.Development\buffaly.agent.web\bin\Debug\net9.0\Buffaly.Agent.Host.dll</HintPath>
-		</Reference>
-		<Reference Include="Buffaly.Agent.Common">
-			<HintPath>C:\dev\Buffaly.Development\buffaly.agent.web\bin\Debug\net9.0\Buffaly.Agent.Common.dll</HintPath>
-		</Reference>
-		<Reference Include="Buffaly.Data">
-			<HintPath>C:\dev\Buffaly.Development\buffaly.agent.web\bin\Debug\net9.0\Buffaly.Data.dll</HintPath>
-		</Reference>
-		<Reference Include="Buffaly.Sessions.DB">
-			<HintPath>C:\dev\Buffaly.Development\buffaly.agent.web\bin\Debug\net9.0\Buffaly.Sessions.DB.dll</HintPath>
-		</Reference>
-	</ItemGroup>
   <ItemGroup>
     <Content Include="ModulePackage\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

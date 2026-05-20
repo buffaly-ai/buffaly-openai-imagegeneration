@@ -87,7 +87,7 @@ static void SetConnectionString(IConfiguration config)
 		throw new InvalidOperationException("ConnectionStrings:buffaly_sessions.readwrite is required for standalone image harness feature loading.");
 	}
 
-	Buffaly.Sessions.DB.DataAccess.SetConnectionString(connectionString);
-	Buffaly.Data.DataAccess.SetConnectionString(connectionString);
+	//Buffaly.Sessions.DB.DataAccess.SetConnectionString(connectionString);
+	//Buffaly.Data.DataAccess.SetConnectionString(connectionString);
 }
 
