@@ -70,6 +70,7 @@
     clearMaskButton: document.getElementById('clearMaskButton'),
     generateButton: document.getElementById('generateButton'),
     editButton: document.getElementById('editButton'),
+    openImageLink: document.getElementById('openImageLink'),
     downloadResultLink: document.getElementById('downloadResultLink'),
     copyPathButton: document.getElementById('copyPathButton'),
     refreshGalleryButton: document.getElementById('refreshGalleryButton'),
@@ -173,6 +174,10 @@
       el.imageStage.classList.remove('has-image');
       el.activeTitle.textContent = 'No image loaded';
       el.activeMeta.textContent = 'Generate an image, load one from disk, or choose a historical output.';
+      if (el.openImageLink) {
+        el.openImageLink.href = '#';
+        el.openImageLink.classList.add('disabled');
+      }
       el.downloadResultLink.href = '#';
       el.downloadResultLink.classList.add('disabled');
       return;
@@ -181,6 +186,10 @@
     el.activeImage.src = state.activeImageUrl;
     el.activeTitle.textContent = state.activeName;
     el.activeMeta.textContent = [state.activeKind, model, formatBytes(bytes)].filter(Boolean).join(' / ');
+    if (el.openImageLink) {
+      el.openImageLink.href = state.activeImageUrl;
+      el.openImageLink.classList.remove('disabled');
+    }
     el.downloadResultLink.href = state.activeImageUrl;
     el.downloadResultLink.download = state.activeName;
     el.downloadResultLink.classList.remove('disabled');
@@ -425,11 +434,15 @@
       return;
     }
     if (state.maskHasPaint) {
-      el.maskHint.textContent = 'Mask ready. The blue overlay is visible on the canvas and will be sent automatically when you edit.';
+      el.maskHint.textContent = state.maskMode
+        ? 'Mask ready. The blue overlay is visible and will be sent automatically. Click the active Paint/Erase button again to stop drawing.'
+        : 'Mask ready. Drawing is off; the blue overlay will be sent automatically when you edit.';
       el.maskHint.className = 'mask-hint ready';
       return;
     }
-    el.maskHint.textContent = 'No mask painted. The edit prompt will apply to the whole active image unless you paint blue over the area to change.';
+    el.maskHint.textContent = state.maskMode
+      ? 'No mask painted yet. Click the active Paint/Erase button again to stop drawing.'
+      : 'Drawing is off. Click Paint only when you want to mark an area; otherwise you can open, download, or copy the image without painting.';
     el.maskHint.className = 'mask-hint';
   }
 
@@ -441,9 +454,16 @@
   }
 
   function setMaskMode(mode) {
-    state.maskMode = mode;
-    el.paintMaskButton.classList.toggle('active', mode === 'paint');
-    el.eraseMaskButton.classList.toggle('active', mode === 'erase');
+    state.maskMode = mode === 'paint' || mode === 'erase' ? mode : '';
+    state.drawing = false;
+    el.paintMaskButton.classList.toggle('active', state.maskMode === 'paint');
+    el.eraseMaskButton.classList.toggle('active', state.maskMode === 'erase');
+    el.maskCanvas.classList.toggle('mask-tool-active', state.maskMode === 'paint' || state.maskMode === 'erase');
+    updateMaskHint();
+  }
+
+  function toggleMaskMode(mode) {
+    setMaskMode(state.maskMode === mode ? '' : mode);
   }
 
   function pointerPosition(event) {
@@ -458,7 +478,7 @@
   }
 
   function paintAt(event) {
-    if (!state.drawing) return;
+    if (!state.drawing || !state.maskMode) return;
     const pos = pointerPosition(event);
     if (!pos) return;
     const ctx = el.maskCanvas.getContext('2d');
@@ -873,8 +893,8 @@
   el.sourceImages.addEventListener('change', event => loadSourceFiles(event.target.files));
   el.clearMaskButton.addEventListener('click', clearMask);
   el.undoMaskButton.addEventListener('click', undoMask);
-  el.paintMaskButton.addEventListener('click', () => setMaskMode('paint'));
-  el.eraseMaskButton.addEventListener('click', () => setMaskMode('erase'));
+  el.paintMaskButton.addEventListener('click', () => toggleMaskMode('paint'));
+  el.eraseMaskButton.addEventListener('click', () => toggleMaskMode('erase'));
   el.copyPathButton.addEventListener('click', () => navigator.clipboard.writeText(state.activeOutputFilePath || ''));
   el.copyResultButton.addEventListener('click', () => navigator.clipboard.writeText(el.lastResult.textContent || ''));
   el.refreshGalleryButton.addEventListener('click', () => refreshGallery().catch(error => el.lastResult.textContent = String(error)));
@@ -918,6 +938,8 @@
   });
 
   el.maskCanvas.addEventListener('pointerdown', event => {
+    if (!state.maskMode) return;
+    event.preventDefault();
     state.drawing = true;
     saveMaskUndo();
     el.maskCanvas.setPointerCapture(event.pointerId);

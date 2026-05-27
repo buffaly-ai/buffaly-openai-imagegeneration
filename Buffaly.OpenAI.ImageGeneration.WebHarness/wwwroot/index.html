@@ -103,6 +103,7 @@
               <input id="sourceImages" type="file" accept="image/png,image/jpeg,image/webp">
               Load image
             </label>
+            <a id="openImageLink" class="button-link disabled" href="#" target="_blank" rel="noopener">Open large</a>
             <a id="downloadResultLink" class="button-link disabled" href="#" download>Download</a>
             <button id="copyPathButton" class="secondary" type="button">Copy path</button>
           </div>
@@ -135,7 +136,7 @@
             <input id="brushSize" type="range" min="8" max="96" value="36">
           </div>
           <div class="mask-actions">
-            <button id="paintMaskButton" class="secondary active" type="button">Paint</button>
+            <button id="paintMaskButton" class="secondary" type="button">Paint</button>
             <button id="eraseMaskButton" class="secondary" type="button">Erase</button>
             <button id="undoMaskButton" class="secondary" type="button">Undo</button>
             <button id="clearMaskButton" class="secondary" type="button">Clear</button>

@@ -305,10 +305,15 @@ button.secondary.active {
 #maskCanvas {
   position: absolute;
   display: none;
-  cursor: crosshair;
+  cursor: default;
   touch-action: none;
+  pointer-events: none;
 }
 .image-stage.has-image #maskCanvas { display: block; }
+#maskCanvas.mask-tool-active {
+  cursor: crosshair;
+  pointer-events: auto;
+}
 
 .empty-state {
   display: grid;
