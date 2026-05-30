@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Buffaly.OpenAI.ImageGeneration;
+using Buffaly.Agent.Host;
 using WebAppUtilities;
 
 namespace Buffaly.OpenAI.ImageGeneration.WebHarness;
@@ -128,7 +129,17 @@ public sealed class ImageGenerationHarnessJsonWsService : JsonWs
 
     private static ImageHarnessRuntime BuildRuntime(ImageHarnessContextRequestContract? request)
     {
-        return ImageHarnessRuntime.Create(s_apiKey, request?.RootDirectory);
+        string apiKey = string.IsNullOrWhiteSpace(s_apiKey) ? OpenAIFeature.Feature.ApiKey : s_apiKey;
+        string rootDirectory = string.IsNullOrWhiteSpace(request?.RootDirectory)
+            ? GetDefaultRootDirectory()
+            : request.RootDirectory;
+        return ImageHarnessRuntime.Create(apiKey, rootDirectory);
+    }
+
+    // Keeps default page loads on the harness-owned output root when no context root is supplied.
+    private static string GetDefaultRootDirectory()
+    {
+        return Path.Combine("C:\\temp", "generated-images", "web-harness");
     }
 
     private static ImageHarnessOptionContract[] BuildModelOptions()
