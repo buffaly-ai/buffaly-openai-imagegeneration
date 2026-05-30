@@ -1,63 +1,73 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Buffaly Image Studio</title>
-  <link rel="stylesheet" href="styles/image-harness.css">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Buffaly Image Studio</title>
+	<link rel="icon" type="image/png" href="/images/bf_logo_fav_Large.png">
+	<link rel="stylesheet" href="/custom_css/buffaly-page.css?v=20260526.1">
+	<link rel="stylesheet" href="/custom_css/buffaly-navigation.css?v=20260528.1">
+	<link rel="stylesheet" href="styles/image-harness.css">
 </head>
-<body>
-  <main class="app-shell">
-    <header class="hero-card">
-      <div class="brand-lockup">
-        <div class="brand-mark"><img src="images/bf_logo_fav_Large.png" alt="Buffaly"></div>
-        <div>
-          <p class="eyebrow">Buffaly Agent Tools</p>
-          <h1>Image Studio</h1>
-          <p class="hero-copy">Generate, load, revise, and compare images in one Buffaly-style working canvas.</p>
-        </div>
+<body class="buffaly-page">
+	<div class="buffaly-app-strip" role="banner">
+		<a class="buffaly-app-strip-brand" href="/buffaly-agent.html">
+			<img src="/images/bf_logo_fav_Large.png" alt="">
+			<span>Buffaly</span>
+		</a>
+		<div class="buffaly-app-strip-center">
+			<buffaly-navigation-launcher label="Navigation" variant="strip" current-href="web-modules/OpenAIImageGeneration/index.html"></buffaly-navigation-launcher>
+		</div>
+		<div class="buffaly-app-strip-page">Image Studio</div>
+	</div>
+  <main class="buffaly-page-shell">
+    <header class="buffaly-page-hero">
+      <div class="buffaly-page-hero-main">
+        <p class="buffaly-kicker">Buffaly Agent Tools</p>
+        <h1 class="buffaly-title">Image Studio</h1>
+        <p class="buffaly-subtitle">Generate, load, revise, and compare images in one Buffaly-style working canvas.</p>
       </div>
-      <div class="hero-actions">
-        <div id="apiStatus" class="status-pill">Checking API key</div>
-        <button id="refreshGalleryButton" class="secondary" type="button">Refresh history</button>
+      <div class="buffaly-page-hero-actions">
+        <div id="apiStatus" class="buffaly-status-pill warning">Checking API key</div>
+        <button id="refreshGalleryButton" class="buffaly-button secondary" type="button">Refresh history</button>
       </div>
     </header>
 
     <section class="studio-grid" aria-label="Image editing workspace">
-      <aside class="control-panel">
+      <aside class="buffaly-panel control-panel">
         <div class="panel-section">
-          <p class="eyebrow">Create</p>
-          <h2>Prompt</h2>
-          <label class="prompt-field">
-            <span>Generation prompt</span>
-            <textarea id="generatePrompt" rows="7">Create a clean square product image: a matte blue coffee mug on a light desk, with a small white label on the mug that says BUFFALY.</textarea>
+          <p class="buffaly-section-label">Create</p>
+          <h2 class="buffaly-panel-title">Prompt</h2>
+          <label class="buffaly-field prompt-field">
+            <span class="buffaly-field-label">Generation prompt</span>
+            <textarea id="generatePrompt" class="buffaly-textarea" rows="7">Create a clean square product image: a matte blue coffee mug on a light desk, with a small white label on the mug that says BUFFALY.</textarea>
           </label>
-          <button id="generateButton" class="primary wide" type="button">Generate new image</button>
+          <button id="generateButton" class="buffaly-button wide" type="button">Generate new image</button>
           <div id="generateMessage" class="message"></div>
         </div>
 
         <div class="panel-section divider">
-          <p class="eyebrow">Revise</p>
-          <h2>Edit active image</h2>
-          <label class="prompt-field">
-            <span>Edit instruction</span>
-            <textarea id="editPrompt" rows="5">Change the mug color to warm red while keeping the composition and the BUFFALY label.</textarea>
+          <p class="buffaly-section-label">Revise</p>
+          <h2 class="buffaly-panel-title">Edit active image</h2>
+          <label class="buffaly-field prompt-field">
+            <span class="buffaly-field-label">Edit instruction</span>
+            <textarea id="editPrompt" class="buffaly-textarea" rows="5">Change the mug color to warm red while keeping the composition and the BUFFALY label.</textarea>
           </label>
-          <button id="editButton" class="primary wide" type="button">Edit active image</button>
+          <button id="editButton" class="buffaly-button wide" type="button">Edit active image</button>
           <div id="editMessage" class="message"></div>
         </div>
 
         <div class="panel-section divider options-grid">
-          <label>
-            <span>Model</span>
-            <select id="modelSelect">
+          <label class="buffaly-field">
+            <span class="buffaly-field-label">Model</span>
+            <select id="modelSelect" class="buffaly-select">
               <option value="gpt-image-1.5">GPT Image 1.5</option>
               <option value="gpt-image-2">GPT Image 2</option>
             </select>
           </label>
-          <label>
-            <span>Size</span>
-            <select id="sizeSelect">
+          <label class="buffaly-field">
+            <span class="buffaly-field-label">Size</span>
+            <select id="sizeSelect" class="buffaly-select">
               <option value="1024x1024">1024 x 1024</option>
               <option value="1024x1536">1024 x 1536</option>
               <option value="1536x1024">1536 x 1024</option>
@@ -67,55 +77,54 @@
               <option value="auto">Auto</option>
             </select>
           </label>
-          <label>
-            <span>Quality</span>
-            <select id="qualitySelect">
+          <label class="buffaly-field">
+            <span class="buffaly-field-label">Quality</span>
+            <select id="qualitySelect" class="buffaly-select">
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
               <option value="auto">Auto</option>
             </select>
           </label>
-          <label>
-            <span>Format</span>
-            <select id="formatSelect">
+          <label class="buffaly-field">
+            <span class="buffaly-field-label">Format</span>
+            <select id="formatSelect" class="buffaly-select">
               <option value="png">PNG</option>
               <option value="jpeg">JPEG</option>
               <option value="webp">WebP</option>
             </select>
           </label>
-          <label>
-            <span>Compression</span>
-            <input id="compressionInput" type="number" min="0" max="100" placeholder="JPEG/WebP">
+          <label class="buffaly-field">
+            <span class="buffaly-field-label">Compression</span>
+            <input id="compressionInput" class="buffaly-input" type="number" min="0" max="100" placeholder="JPEG/WebP">
           </label>
         </div>
       </aside>
 
-      <section class="canvas-card" aria-label="Active image canvas">
-        <div class="canvas-toolbar">
+      <section class="buffaly-panel canvas-card" aria-label="Active image canvas">
+        <div class="buffaly-panel-header canvas-toolbar">
           <div>
-            <p class="eyebrow">Active canvas</p>
-            <h2 id="activeTitle">No image loaded</h2>
-            <p id="activeMeta" class="subtle">Generate an image, load one from disk, or choose a historical output.</p>
+            <p class="buffaly-section-label">Active canvas</p>
+            <h2 id="activeTitle" class="buffaly-panel-title">No image loaded</h2>
+            <p id="activeMeta" class="buffaly-muted">Generate an image, load one from disk, or choose a historical output.</p>
           </div>
           <div class="toolbar-actions">
-            <label class="file-button">
+            <label class="buffaly-button file-button">
               <input id="sourceImages" type="file" accept="image/png,image/jpeg,image/webp">
               Load image
             </label>
-            <a id="openImageLink" class="button-link disabled" href="#" target="_blank" rel="noopener">Open large</a>
-            <a id="downloadResultLink" class="button-link disabled" href="#" download>Download</a>
-            <button id="copyPathButton" class="secondary" type="button">Copy path</button>
+            <a id="downloadResultLink" class="buffaly-button button-link disabled" href="#" download>Download</a>
+            <button id="copyPathButton" class="buffaly-button secondary" type="button">Copy path</button>
           </div>
         </div>
 
         <div class="debug-viewer" aria-label="Mask pipeline debugger">
           <div class="debug-tabs" id="debugViewTabs">
-            <button class="secondary active" type="button" data-debug-view="final">Final</button>
-            <button class="secondary" type="button" data-debug-view="source">Source</button>
-            <button class="secondary" type="button" data-debug-view="mask">Mask</button>
-            <button class="secondary" type="button" data-debug-view="source-mask">Source + Mask</button>
-            <button class="secondary" type="button" data-debug-view="final">OpenAI result</button>
+            <button class="buffaly-button secondary active" type="button" data-debug-view="final">Final</button>
+            <button class="buffaly-button secondary" type="button" data-debug-view="source">Source</button>
+            <button class="buffaly-button secondary" type="button" data-debug-view="mask">Mask</button>
+            <button class="buffaly-button secondary" type="button" data-debug-view="source-mask">Source + Mask</button>
+            <button class="buffaly-button secondary" type="button" data-debug-view="final">OpenAI result</button>
           </div>
           <div id="debugSizingDiagnostics" class="debug-sizing">No canvas sizing measured yet.</div>
         </div>
@@ -123,7 +132,7 @@
           <div class="image-stage" id="imageStage">
             <img id="activeImage" alt="Active working image">
             <canvas id="maskCanvas"></canvas>
-            <div id="canvasEmpty" class="empty-state">
+            <div id="canvasEmpty" class="buffaly-empty-state empty-state">
               <strong>One working canvas.</strong>
               <span>Drop an image here, generate a new image, or select an item from history.</span>
             </div>
@@ -132,52 +141,52 @@
 
         <div class="mask-bar">
           <div class="brush-control">
-            <span class="field-label">Mask brush</span>
+            <span class="buffaly-field-label field-label">Mask brush</span>
             <input id="brushSize" type="range" min="8" max="96" value="36">
           </div>
           <div class="mask-actions">
-            <button id="paintMaskButton" class="secondary" type="button">Paint</button>
-            <button id="eraseMaskButton" class="secondary" type="button">Erase</button>
-            <button id="undoMaskButton" class="secondary" type="button">Undo</button>
-            <button id="clearMaskButton" class="secondary" type="button">Clear</button>
+            <button id="paintMaskButton" class="buffaly-button secondary active" type="button">Paint</button>
+            <button id="eraseMaskButton" class="buffaly-button secondary" type="button">Erase</button>
+            <button id="undoMaskButton" class="buffaly-button secondary" type="button">Undo</button>
+            <button id="clearMaskButton" class="buffaly-button secondary" type="button">Clear</button>
           </div>
           <div id="maskHint" class="mask-hint">Masking is automatic. Paint blue over the area to edit; if any mask is visible, the app sends it with the edit.</div>
         </div>
 
         <div class="mask-diagnostics" aria-label="Mask diagnostics">
           <div>
-            <span class="field-label">Mask diagnostics</span>
+            <span class="buffaly-field-label field-label">Mask diagnostics</span>
             <div id="maskDiagnostics">No mask prepared yet.</div>
           </div>
           <div class="mask-debug-links">
-            <a id="downloadDebugSourceLink" class="button-link disabled" href="#" download>Debug source</a>
-            <a id="downloadDebugMaskLink" class="button-link disabled" href="#" download>Debug mask</a>
+            <a id="downloadDebugSourceLink" class="buffaly-button secondary button-link disabled" href="#" download>Debug source</a>
+            <a id="downloadDebugMaskLink" class="buffaly-button secondary button-link disabled" href="#" download>Debug mask</a>
           </div>
         </div>
       </section>
 
-      <aside class="history-panel">
-        <div class="panel-header compact">
+      <aside class="buffaly-panel history-panel">
+        <div class="buffaly-panel-header compact">
           <div>
-            <p class="eyebrow">History</p>
-            <h2>Recent images</h2>
+            <p class="buffaly-section-label">History</p>
+            <h2 class="buffaly-panel-title">Recent images</h2>
           </div>
         </div>
         <div id="galleryGrid" class="history-list">
-          <div class="empty-state">No saved outputs found yet.</div>
+          <div class="buffaly-empty-state empty-state">No saved outputs found yet.</div>
         </div>
       </aside>
     </section>
 
-    <section class="details-panel">
-      <div class="panel-header compact">
+    <section class="buffaly-panel details-panel">
+      <div class="buffaly-panel-header compact">
         <div>
-          <p class="eyebrow">Response</p>
-          <h2>Last API result</h2>
+          <p class="buffaly-section-label">Response</p>
+          <h2 class="buffaly-panel-title">Last API result</h2>
         </div>
-        <button id="copyResultButton" class="secondary" type="button">Copy JSON</button>
+        <button id="copyResultButton" class="buffaly-button secondary" type="button">Copy JSON</button>
       </div>
-      <pre id="lastResult">No calls yet.</pre>
+      <pre id="lastResult" class="buffaly-code-block">No calls yet.</pre>
     </section>
   </main>
 
@@ -198,6 +207,9 @@
   </script>
   <script src="/JsonWs/Buffaly.OpenAI.ImageGeneration.WebHarness.ImageGenerationHarnessJsonWsService.ashx.js?v=20260423.1"></script>
   <script src="js/image-harness.js"></script>
+	<script src="/js/navigation/buffaly-navigation-data.js?v=20260528.2"></script>
+	<script src="/js/navigation/buffaly-navigation-launcher.js?v=20260528.1"></script>
 </body>
 </html>
+
 
