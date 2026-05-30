@@ -1,5 +1,9 @@
 reference Buffaly.OpenAI.ImageGeneration Buffaly.OpenAI.ImageGeneration;
 import Buffaly.OpenAI.ImageGeneration Buffaly.OpenAI.ImageGeneration.OpenAIImageGenerationServiceRuntime OpenAIImageGenerationServiceRuntime;
+import Buffaly.Agent.Tools.Http Buffaly.Agent.Tools.Http.JsonWsHelper JsonWsHelper;
+import Buffaly.Agent.Tools.Llm Buffaly.Agent.Tools.Llm.LLMs LLMs;
+import BasicUtilities BasicUtilities.JsonObject JsonObject;
+import BasicUtilities BasicUtilities.StringUtil StringUtil;
 
 prototype OpenAIImageGenerationSkillAction : OpsAction
 {
@@ -11,6 +15,41 @@ prototype OpenAIImageGenerationSkill : SkillEntity
 {
 	Description = "OpenAI image generation tools and harness-backed output helpers.";
 	ActionRoot = OpenAIImageGenerationSkillAction;
+}
+
+prototype OpenAIImageGenerationWebModuleService : Service
+{
+	ServiceName = "OpenAIImageGenerationWebModuleService";
+	Scope = "per-binding";
+	Description = @"Installed OpenAI image-generation web-module JSON route binding.";
+
+	String BaseUrl = "";
+	String ApiPrefix = "api/buffaly.openai.imagegeneration.webharness/image-generation-harness-json-ws-service";
+
+	function Initialize() : string
+	{
+		string apiKey = LLMs.GetResponsesApiKeyOrEmpty();
+		if (StringUtil.IsEmpty(apiKey))
+		{
+			throw "OpenAI feature API key is required before using the OpenAI image generation web module.";
+		}
+
+		string resolvedBaseUrl = StringUtil.IsEmpty(this.BaseUrl) ? JsonWsHelper.ResolveWorkerInternalBaseUrl() : this.BaseUrl;
+		JsonObject request = new JsonObject();
+		request["ApiKey"] = apiKey;
+		JsonObject args = new JsonObject();
+		args["request"] = request;
+		string routeUrl = JsonWsHelper.BuildJsonRouteUrl(resolvedBaseUrl, this.ApiPrefix, "initialize");
+		JsonWsHelper.CallJsonWs(routeUrl, "Initialize", "", args);
+		return "OpenAIImageGenerationWebModuleService initialized (BaseUrl = " + resolvedBaseUrl + ", HasApiKey = true).";
+	}
+}
+
+[SemanticEntity("local openai image generation web module service")]
+partial prototype OpenAIImageGenerationWebModuleService#Local : OpenAIImageGenerationWebModuleService
+{
+	BaseUrl = "";
+	Description = "Local installed OpenAI image-generation web module binding using WorkerFeature.InternalBaseUrl unless explicitly overridden.";
 }
 
 [SemanticProgram.InfinitivePhrase("to generate an image with openai")]

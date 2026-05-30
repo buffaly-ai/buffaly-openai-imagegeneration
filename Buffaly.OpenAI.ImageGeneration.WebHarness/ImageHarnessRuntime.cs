@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Buffaly.Agent.Host;
 
 namespace Buffaly.OpenAI.ImageGeneration.WebHarness;
 
@@ -34,12 +33,13 @@ internal sealed class ImageHarnessRuntime
 
 	public static ImageHarnessRuntime Create(string? rootDirectory)
 	{
-		return new ImageHarnessRuntime(ResolveOpenAIApiKey(), rootDirectory ?? string.Empty);
+		return Create(string.Empty, rootDirectory);
 	}
 
-	private static string ResolveOpenAIApiKey()
+	// Receive the OpenAI key only from the ProtoScript service initializer that reads OpenAIFeature.
+	public static ImageHarnessRuntime Create(string apiKey, string? rootDirectory)
 	{
-		return NormalizeOptional(OpenAIFeature.Feature.ApiKey);
+		return new ImageHarnessRuntime(apiKey, rootDirectory ?? string.Empty);
 	}
 
 	public string CreateOutputPath(string operation, string model, string outputFormat)

@@ -30,6 +30,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Generated\JsonWs\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="ModulePackage\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
@@ -51,3 +55,4 @@
     <Delete Files="$(PublishDir)Buffaly.Agent.Host.pdb" />
   </Target>
 </Project>
+

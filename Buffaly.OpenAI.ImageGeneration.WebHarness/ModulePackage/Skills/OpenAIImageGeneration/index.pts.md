@@ -7,3 +7,6 @@
 - Simplified the skill so each action configures and calls the C# image runtime directly instead of routing through a ProtoScript Service wrapper, avoiding null service-call return propagation in staging.
 
 - Aligned ProtoScript imports with OpenAIImageGenerationServiceRuntime facade methods so action calls bind to the actual C# runtime type.
+
+## Initialize from OpenAIFeature (2026-05-30)
+- Added OpenAIImageGenerationWebModuleService.Initialize to read LLMs.GetResponsesApiKeyOrEmpty and call the image-generation JsonWs initialize route.

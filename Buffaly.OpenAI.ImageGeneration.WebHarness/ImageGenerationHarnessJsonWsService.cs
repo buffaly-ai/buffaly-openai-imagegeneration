@@ -6,6 +6,25 @@ namespace Buffaly.OpenAI.ImageGeneration.WebHarness;
 
 public sealed class ImageGenerationHarnessJsonWsService : JsonWs
 {
+    private static string s_apiKey = string.Empty;
+
+    [JsonWsSerialize(SerializeResultsOptions.Full)]
+    public static ImageHarnessConfigContract Initialize(ImageHarnessInitializeRequestContract request)
+    {
+        if (request == null) throw new JsonWsException("request is required.");
+        s_apiKey = NormalizeOptionalText(request.ApiKey);
+        return new ImageHarnessConfigContract
+        {
+            HasApiKey = !string.IsNullOrWhiteSpace(s_apiKey),
+            RootDirectory = string.Empty,
+            FileName = string.Empty,
+            Models = BuildModelOptions(),
+            Sizes = BuildSizeOptions(),
+            Qualities = ["low", "medium", "high", "auto"],
+            OutputFormats = ["png", "jpeg", "webp"]
+        };
+    }
+
     [JsonWsSerialize(SerializeResultsOptions.Full)]
     public static ImageHarnessConfigContract GetConfig(ImageHarnessContextRequestContract request)
     {
@@ -15,21 +34,8 @@ public sealed class ImageGenerationHarnessJsonWsService : JsonWs
             HasApiKey = !string.IsNullOrWhiteSpace(runtime.ApiKey),
             RootDirectory = runtime.RootDirectory,
             FileName = NormalizeOptionalText(request?.FileName),
-            Models =
-            [
-                new ImageHarnessOptionContract { Value = "gpt-image-1.5", Label = "GPT Image 1.5", SupportsFlexibleSize = false },
-                new ImageHarnessOptionContract { Value = "gpt-image-2", Label = "GPT Image 2", SupportsFlexibleSize = true }
-            ],
-            Sizes =
-            [
-                new ImageHarnessOptionContract { Value = "1024x1024", Label = "Square 1024" },
-                new ImageHarnessOptionContract { Value = "1024x1536", Label = "Portrait 1024x1536" },
-                new ImageHarnessOptionContract { Value = "1536x1024", Label = "Landscape 1024x1536" },
-                new ImageHarnessOptionContract { Value = "2048x2048", Label = "2K square (GPT Image 2)" },
-                new ImageHarnessOptionContract { Value = "2048x1152", Label = "2K landscape (GPT Image 2)" },
-                new ImageHarnessOptionContract { Value = "3840x2160", Label = "4K landscape (GPT Image 2)" },
-                new ImageHarnessOptionContract { Value = "auto", Label = "Auto" }
-            ],
+            Models = BuildModelOptions(),
+            Sizes = BuildSizeOptions(),
             Qualities = ["low", "medium", "high", "auto"],
             OutputFormats = ["png", "jpeg", "webp"]
         };
@@ -122,7 +128,30 @@ public sealed class ImageGenerationHarnessJsonWsService : JsonWs
 
     private static ImageHarnessRuntime BuildRuntime(ImageHarnessContextRequestContract? request)
     {
-        return ImageHarnessRuntime.Create(request?.RootDirectory);
+        return ImageHarnessRuntime.Create(s_apiKey, request?.RootDirectory);
+    }
+
+    private static ImageHarnessOptionContract[] BuildModelOptions()
+    {
+        return
+        [
+            new ImageHarnessOptionContract { Value = "gpt-image-1.5", Label = "GPT Image 1.5", SupportsFlexibleSize = false },
+            new ImageHarnessOptionContract { Value = "gpt-image-2", Label = "GPT Image 2", SupportsFlexibleSize = true }
+        ];
+    }
+
+    private static ImageHarnessOptionContract[] BuildSizeOptions()
+    {
+        return
+        [
+            new ImageHarnessOptionContract { Value = "1024x1024", Label = "Square 1024" },
+            new ImageHarnessOptionContract { Value = "1024x1536", Label = "Portrait 1024x1536" },
+            new ImageHarnessOptionContract { Value = "1536x1024", Label = "Landscape 1024x1536" },
+            new ImageHarnessOptionContract { Value = "2048x2048", Label = "2K square (GPT Image 2)" },
+            new ImageHarnessOptionContract { Value = "2048x1152", Label = "2K landscape (GPT Image 2)" },
+            new ImageHarnessOptionContract { Value = "3840x2160", Label = "4K landscape (GPT Image 2)" },
+            new ImageHarnessOptionContract { Value = "auto", Label = "Auto" }
+        ];
     }
 
     private static ImageHarnessResultContract ToContract(HarnessResult result)
@@ -163,6 +192,11 @@ public class ImageHarnessContextRequestContract
 {
     public string RootDirectory { get; set; } = string.Empty;
     public string FileName { get; set; } = string.Empty;
+}
+
+public sealed class ImageHarnessInitializeRequestContract
+{
+    public string ApiKey { get; set; } = string.Empty;
 }
 
 public sealed class ImageHarnessConfigContract
